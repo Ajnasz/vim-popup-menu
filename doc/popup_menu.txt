@@ -1,16 +1,43 @@
 *popup_menu.txt* Neovim native plugin library, that tries to mimic the behavior of the autocomplete popup menu
 
 ==============================================================================
-Functions                                                    *popup_menu*
+*popup_menu*
 
 popup_menu#open({choices}, {callback})                       *popup_menu#open()*
 
 Opens a floating window and executes the callback when enter pressed on a selection.
 
->
+Example: >
   popup_menu#open(['first choice', 'second choice', 'third choice'], { selection -> nvim_err_writeln(selection) })
 <
-
-popup_menu#win_select_item_chan({item}, {chan}, {winid}) *popup_menu#win_select_item_chan()*
+popup_menu#win_select_item_chan({item}, {chan-id}, {winid})     *popup_menu#win_select_item_chan()*
 
 Internal function which executed when an item selected.
+
+==============================================================================
+Popup menu channels                                          *popup_menu#chans*
+
+popup_menu#chan#create({opts})                               *popup_menu#chan#create()*
+
+Naive implementation of jobs
+It accepts a dictionary as a parameter, which must have a `on_data` callback
+
+Example: >
+  let chan = popup_menu#chan#create({ 'on_data': { id, data, event -> a:callback(data) } })
+<
+Returns job-id
+
+on_data({chan-id}, {data}, {name})                              *on_data*
+    Parameters: ~
+      {chan-id}     Channel handle
+      {data}        Data sent to the channel with the `popup_menu#chan#send_msg()`
+      {name}        Event name
+
+popup_menu#chan#close({chan-id})                                *popup_menu#chan#close()*
+
+Closes the channel
+
+popup_menu#chan#send_msg({chan-id}, {data})                     *popup_menu#chan#send_msg()*
+
+Sends message to the channel, the `on_data` listener callbacks will be called with the
+data as a parameter.

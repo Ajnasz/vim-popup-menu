@@ -6,7 +6,7 @@ endfunction
 
 function! popup_menu#win_select_item_chan(item, chan, winid)
 	call nvim_win_close(a:winid, 1)
-	call chansend(a:chan, a:item)
+	call popup_menu#chan#send_msg(a:chan, a:item)
 endfunction
 
 function! s:create_keymap(winid, chan)
@@ -41,6 +41,7 @@ function! popup_menu#open(choices, callback)
 	call setwinvar(l:popup_win_id, '&winhl', 'Normal:Pmenu,CursorLine:PmenuSel')
 	call setwinvar(l:popup_win_id, '&readonly', 1)
 	call setwinvar(l:popup_win_id, '&modifiable', 0)
-	let chan = jobstart(['cat'], { 'on_stdout': { id, data, event -> a:callback(data[0]) } })
+	" let chan = jobstart(['cat'], { 'on_stdout': { id, data, event -> a:callback(data[0]) } })
+	let chan = popup_menu#chan#create({ 'on_data': { id, data, event -> a:callback(data[0]) } })
 	call s:create_keymap(l:popup_win_id, chan)
 endfunction
