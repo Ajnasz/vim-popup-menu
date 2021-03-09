@@ -1,0 +1,16 @@
+*popup_menu.txt* Neovim native plugin library, that tries to mimic the behavior of the autocomplete popup menu
+
+==============================================================================
+Functions                                                    *popup_menu*
+
+popup_menu#open({choices}, {callback})                       *popup_menu#open()*
+
+Opens a floating window and executes the callback when enter pressed on a selection.
+
+>
+  popup_menu#open(['first choice', 'second choice', 'third choice'], { selection -> nvim_err_writeln(selection) })
+<
+
+popup_menu#win_select_item_chan({item}, {chan}, {winid}) *popup_menu#win_select_item_chan()*
+
+Internal function which executed when an item selected.

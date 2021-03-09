@@ -4,12 +4,8 @@ function! s:max_word_length(choices) abort
 	return max(map(copy(a:choices), {_, v -> strlen(v)}))
 endfunction
 
-function! popup_menu#popup_close(winid)
-	call nvim_win_close(a:winid, 1)
-endfunction
-
 function! popup_menu#win_select_item_chan(item, chan, winid)
-	call popup_menu#popup_close(a:winid)
+	call nvim_win_close(a:winid, 1)
 	call chansend(a:chan, a:item)
 endfunction
 
@@ -23,7 +19,7 @@ function! s:create_keymap(winid, chan)
 	if m ==# 'n' || m ==# 'i' || m ==# 'ic'
 		noa call win_gotoid(a:winid)
 		exe 'nnoremap <silent><expr><nowait><buffer> <cr> ":call popup_menu#win_select_item_chan(getline(''.''), ' . a:chan . ', ' . a:winid . ')\<cr>\<esc>"'
-		exe 'nnoremap <silent><expr><nowait><buffer> <esc> ":call popup_menu#popup_close(' . a:winid . ')\<cr>\<esc>"'
+		exe 'nnoremap <silent><expr><nowait><buffer> <esc> ":call nvim_win_close(' . a:winid . ', 1)\<cr>\<esc>"'
 		noa call win_gotoid(curr)
 	endif
 endfunction
