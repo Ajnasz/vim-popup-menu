@@ -1,4 +1,4 @@
-# vim popup-menu nvim
+# vim popup-menu
 
 Neovim native plugin library, that tries to mimic the behavior of the autocomplete popup menu.
 
