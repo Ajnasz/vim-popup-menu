@@ -1,0 +1,58 @@
+*popup_menu_chans.txt* Helper library for |popup_menu| to allow communication
+between windows
+
+==============================================================================
+*popup_menu_chans*
+
+Naive implementation of the nvim |channel|s to communicate between windows.
+
+popup_menu#chan#create({opts})                        *popup_menu#chan#create()*
+
+It accepts a dictionary as a parameter, which must have an `on_data` callback
+function
+
+Example: >
+  function Callback(data)
+    let isEOF = a:data == ['']
+    if !isEOF
+      echomsg "data received" . data
+    endif
+  endfunction
+  let chan = popup_menu#chan#create({ 'on_data': { id, data, event -> Callback(data) } })
+<
+Returns |channel-id| on success, 0 on invalid arguments
+
+on_data({channel-id}, {data}, {name})                                  *on_data*
+  Parameters: ~
+    {channel-id}  Channel handle
+    {data}        Data sent to the channel with the
+                  `popup_menu#chan#send_msg()`. EOF is a single item list: `['']`.
+    {name}        Event name
+
+popup_menu#chan#send_msg({channel-id}, {data})     *popup_menu#chan#send_msg()*
+
+Sends message to the channel, the `on_data` listener callbacks will be called with the
+data as a parameter.
+
+Example: >
+  popup_menu#chan#send_msg(chan, 'message')
+<
+
+popup_menu#chan#close({channel-id})                   *popup_menu#chan#close()*
+
+Closes the channel. The eof message will be sent to the |listener|.
+
+==============================================================================
+Concepts
+
+Channel ID                                            *channel-id*
+
+Each channel is identified by an integer id, unique for the lif of the current
+Nvim session. Functions like |popup_menu#chan#create()| return channel ids,
+functions like |popup_menu#chan#send_msg()| consume channel ids.
+
+Listener                                              *listener*
+
+Function listens to the message. See `on_data`.
+
+ vim:tw=78:ts=8:noet:ft=help:norl:
