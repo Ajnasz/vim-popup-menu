@@ -18,7 +18,6 @@ function! s:create_keymap(winid, chan)
 		return
 	endif
 	let curr = win_getid()
-	" nvim should support win_execute so we don't break visual mode.
 	let m = mode()
 	if m ==# 'n' || m ==# 'i' || m ==# 'ic'
 		noa call win_gotoid(a:winid)
@@ -31,6 +30,7 @@ endfunction
 function! popup_menu#open(choices, callback)
 	let l:buf_id = nvim_create_buf(v:false, v:true)
 	call nvim_buf_set_option(l:buf_id, 'buftype', 'nofile')
+	call nvim_buf_set_option(l:buf_id, 'bufhidden', 'wipe')
 
 	let l:popup_win_id = nvim_open_win(l:buf_id, v:true, {
 				\ 'relative': 'cursor',
@@ -38,6 +38,7 @@ function! popup_menu#open(choices, callback)
 				\ 'height': len(a:choices),
 				\ 'col': 0,
 				\ 'row': 1,
+				\ 'border': 'double'
 				\ })
 	call nvim_buf_set_lines(l:buf_id, 0, -1, v:true, a:choices)
 
@@ -45,7 +46,6 @@ function! popup_menu#open(choices, callback)
 	call setwinvar(l:popup_win_id, '&winhl', 'Normal:Pmenu,CursorLine:PmenuSel')
 	call setwinvar(l:popup_win_id, '&readonly', 1)
 	call setwinvar(l:popup_win_id, '&modifiable', 0)
-	" let chan = jobstart(['cat'], { 'on_stdout': { id, data, event -> a:callback(data[0]) } })
 	let chan = popup_menu#chan#create({ 'on_data': { id, data, event -> data == [''] ? s:noop() : a:callback(data[0]) } })
 	call s:create_keymap(l:popup_win_id, chan)
 endfunction
